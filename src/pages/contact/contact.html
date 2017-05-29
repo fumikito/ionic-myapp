@@ -1,0 +1,19 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>
+      Contact
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-list-header>小説一覧</ion-list-header>
+    <ion-item *ngFor="let user of users">
+      <ion-icon name="star" item-left></ion-icon>
+      <h2>id : {{ user.id }}</h2>
+      <h2>title: {{ user.title.rendered }}</h2>
+      <div [innerHTML]="user.content.rendered"></div>
+    </ion-item>
+  </ion-list>
+</ion-content>
