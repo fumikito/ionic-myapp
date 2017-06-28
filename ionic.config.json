@@ -1,5 +1,11 @@
 {
   "name": "myApp",
   "app_id": "",
-  "type": "ionic-angular"
+  "type": "ionic-angular",
+  "proxies": [
+    {
+      "path": "/oauth1/request",
+      "proxyUrl": "https://wpionic.tokyo/oauth1/request"
+    }
+  ]
 }

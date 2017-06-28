@@ -8,4 +8,31 @@
 
 <ion-content padding>
 
+  <p>
+    こんにちは、{{name}} さん！
+  </p>
+
+  <ul>
+    <li>{{config.endpoint}}</li>
+    <li>{{config.clientKey}}</li>
+    <li>{{config.clientSecret}}</li>
+  </ul>
+
+  <button ion-button (click)="authorize()">認証</button>
+
+  <hr />
+
+  <p>
+    <input type="text" [(ngModel)]="pin" />
+    {{pin}}
+  </p>
+    <button ion-button (click)="retrieve()">ユーザー情報取得</button>
+
+  <div *ngIf="user">
+    <p>
+      <img [src]="user.avatar_urls['96']"> こんにちは、{{user.name}}さん！
+    </p>
+  </div>
+
+
 </ion-content>

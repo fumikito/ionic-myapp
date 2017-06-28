@@ -4,6 +4,9 @@ import { BrowserModule } from '@angular/platform-browser';
 import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
 import { MyApp } from './app.component';
 
+import { IonicStorageModule } from '@ionic/storage';
+import { InAppBrowser } from '@ionic-native/in-app-browser';
+
 import { AboutPage } from '../pages/about/about';
 import { ContactPage } from '../pages/contact/contact';
 import { HomePage } from '../pages/home/home';
@@ -11,7 +14,10 @@ import { TabsPage } from '../pages/tabs/tabs';
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
+
+// Import the module
 import { GithubUsersServiceProvider } from '../providers/github-users-service/github-users-service';
+import { GLIonic2EnvConfigurationModule } from 'gl-ionic2-env-configuration';
 
 @NgModule({
   declarations: [
@@ -24,7 +30,9 @@ import { GithubUsersServiceProvider } from '../providers/github-users-service/gi
   imports: [
     HttpModule,
     BrowserModule,
-    IonicModule.forRoot(MyApp)
+    IonicModule.forRoot(MyApp),
+    IonicStorageModule.forRoot(),
+    GLIonic2EnvConfigurationModule
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -35,6 +43,7 @@ import { GithubUsersServiceProvider } from '../providers/github-users-service/gi
     TabsPage
   ],
   providers: [
+    InAppBrowser,
     StatusBar,
     SplashScreen,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
