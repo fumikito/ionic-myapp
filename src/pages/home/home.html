@@ -5,26 +5,27 @@
 </ion-header>
 
 <ion-content padding>
-  <h2>Ionicへようこそ!</h2>
-  <p>
-     続けるにはログインしてください。
-  </p>
+
+  <h2 text-center>音声エディター</h2>
+
+  <ion-fab center middle>
+    <button ion-fab color="danger" (click)="record()">
+      <ion-icon name="md-mic"></ion-icon>
+    </button>
+  </ion-fab>
+</ion-content>
+
+<ion-footer>
   <ion-list>
 
     <ion-item>
-      <ion-input type="text" [(ngModel)]="name" placeholder="ユーザー名"></ion-input>
+      <ion-label color="primary" floating>出力されたテキスト</ion-label>
+      <ion-textarea [(ngModel)]="text"></ion-textarea>
     </ion-item>
+
 
     <ion-item>
-      <ion-input type="password" [(ngModel)]="password" placeholder="パスワード"></ion-input>
+      <button ion-button color="primary" (click)="submit()">送信</button>
     </ion-item>
-
   </ion-list>
-  <p>
-    <button ion-button (click)="submit()">ログイン</button>
-  </p>
-
-  <p>
-    {{name}} : {{password}}
-  </p>
-</ion-content>
+</ion-footer>

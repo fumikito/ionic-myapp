@@ -67,11 +67,28 @@ export class AboutPage {
         "https://wpionic.tokyo/wp-json/wp/v2/users/me",
         ( data ) => {
           this.user = JSON.parse(data.text);
+          console.log(this.user);
         },
         ( data ) => {
           console.log(data);
         }
       );
+      // Do something
+      this.oauth.post(
+        "https://wpionic.tokyo/wp-json/wp/v2/posts",
+        {
+          'title': 'REST API',
+          'author': 1,
+          'content': 'はじめてのコンテンツ'
+        },
+        ( data ) => {
+          console.log(JSON.parse(data.text));
+        },
+        ( data ) => {
+          console.log(data);
+        }
+      );
+
     }, () => {
       throw new Error('Failed to fetch access token.');
     });

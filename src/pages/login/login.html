@@ -1,0 +1,40 @@
+<!--
+  Generated template for the LoginPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>login</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+
+  <ion-list>
+    <ion-item>
+      ログインしてください。
+    </ion-item>
+    <ion-item>
+
+      <button ion-button (click)="authenticate()">ログイン</button>
+
+    </ion-item>
+
+    <ion-item>
+      PINをとうろくしてください。
+    </ion-item>
+    <ion-item>
+      <ion-input [(ngModel)]="pin"></ion-input>
+    </ion-item>
+    <ion-item>
+      <button ion-button (click)="retrieve()">PIN登録</button>
+    </ion-item>
+  </ion-list>
+
+
+</ion-content>
