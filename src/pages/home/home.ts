@@ -29,6 +29,7 @@ export class HomePage {
   ) {
     this.config = envConfiguration.getConfig();
     this.storage.get('id').then((id)=>{
+    console.log('Constructor', id);
       if (id) {
         this.author = id;
       } else {
@@ -49,24 +50,29 @@ export class HomePage {
       consumerSecret: this.config.clientSecret
     };
 
-    this.storage.get('access_token').then(function(value){
+    let storage = this.storage;
+    let author = this.author;
+    let text = this.text;
+    let notify = this.notify;
+
+    storage.get('access_token').then(function(value){
       config.accessTokenKey = value;
-      return this.storage.get('access_token_secret')
+      return storage.get('access_token_secret')
     }).then(function(value){
       config.accessTokenSecret = value;
-      this.oauth = new JsOAuth.OAuth(config);
-      this.oauth.post(
+      let oauth = new JsOAuth.OAuth(config);
+      oauth.post(
         "https://wpionic.tokyo/wp-json/wp/v2/posts",
         {
           title: '音声投稿されたコンテンツ',
-          author: this.author,
-          content: this.text
+          author: author,
+          content: text
         },
         ( data ) => {
-          this.notify('成功しました');
+          window.alert('投稿しました');
         },
         ( data ) => {
-          this.notify('エラーでした');
+          notify('エラーでした');
         }
       );
     });
@@ -74,9 +80,9 @@ export class HomePage {
 
   }
 
-  notify(string: String) {
+  notify(string) {
     let toast = this.toastCtrl.create({
-      message: '出力が終わりました。',
+      message: string,
       duration: 3000
     });
     toast.present();

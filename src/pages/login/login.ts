@@ -67,17 +67,21 @@ export class LoginPage {
   retrieve(): void {
     this.oauth.setVerifier(this.pin);
 
+    let storage = this.storage;
+    let nav = this.navCtrl;
+    let oauth = this.oauth;
     this.oauth.fetchAccessToken(() => {
       // Save access token
-      this.storage.set('access_token', this.oauth.getAccessTokenKey()).then(() => {
-        return this.storage.set('access_token_secret', this.oauth.getAccessTokenSecret());
+      storage.set('access_token', oauth.getAccessTokenKey()) // Promise が帰ってきている
+        .then(() => {
+        return storage.set('access_token_secret', oauth.getAccessTokenSecret());
       }).then(() => {
-        console.log('Get!', this.storage);
-        this.oauth.get('https://wpionic.tokyo/wp-json/wp/v2/users/me', (data) => {
+        console.log('Get!', storage);
+        oauth.get('https://wpionic.tokyo/wp-json/wp/v2/users/me', (data) => {
           let user = JSON.parse(data.text);
           console.log('User: ', user, data);
-          this.storage.set('user', user.id).then(()=>{
-            this.navCtrl.push(HomePage);
+          storage.set('id', user.id).then(()=>{
+            nav.push(HomePage);
           });
         });
       });
