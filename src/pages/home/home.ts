@@ -3,6 +3,7 @@ import { NavController } from 'ionic-angular';
 import { ToastController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { LoginPage } from "../login/login";
+import { SpeechRecognition } from "@ionic-native/speech-recognition";
 import {EnvConfigurationProvider} from "gl-ionic2-env-configuration";
 import * as JsOAuth from '../../lib/jsoauth/jsoauth';
 
@@ -26,6 +27,7 @@ export class HomePage {
     public toastCtrl: ToastController,
     public storage: Storage,
     private envConfiguration: EnvConfigurationProvider<any>,
+    private speechRecognition: SpeechRecognition
   ) {
     this.config = envConfiguration.getConfig();
     this.storage.get('id').then((id)=>{
@@ -39,7 +41,26 @@ export class HomePage {
   }
 
   record() {
-    this.text = '録音が完了しました';
+    this.speechRecognition.isRecognitionAvailable()
+      .then((available: boolean) => {
+        if ( available ) {
+          this.speechRecognition.startListening({
+            language: "ja-JP",
+          })
+            .subscribe(
+              (matches: Array<string>) => {
+                this.text = matches.join("\n");
+              },
+              (onerror) => {
+                this.text = '録音に失敗しました。やり直してください。';
+              }
+            )
+        } else {
+          this.text = '録音できません。入力してください。';
+        }
+      }, () => {
+        this.text = 'エラーが発生しました。';
+      });
   }
 
   submit() {

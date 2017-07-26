@@ -3,6 +3,7 @@ import { HttpModule } from '@angular/http';
 import { BrowserModule } from '@angular/platform-browser';
 import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
 import { MyApp } from './app.component';
+import { SpeechRecognition } from '@ionic-native/speech-recognition';
 
 import { IonicStorageModule } from '@ionic/storage';
 import { InAppBrowser } from '@ionic-native/in-app-browser';
@@ -50,7 +51,8 @@ import { GLIonic2EnvConfigurationModule } from 'gl-ionic2-env-configuration';
     StatusBar,
     SplashScreen,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
-    GithubUsersServiceProvider
+    GithubUsersServiceProvider,
+    SpeechRecognition
   ]
 })
 export class AppModule {}
