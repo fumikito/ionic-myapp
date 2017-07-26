@@ -512,6 +512,37 @@ exports.OAuth = (function (global) {
       this.request({'method': 'POST', 'url': url, 'data': data, 'success': success, 'failure': failure});
     },
 
+
+    /**
+     * Wrapper for PUT OAuth.request
+     *
+     * @param url {string} vaild http(s) url
+     * @param data {object} A key value paired object of data
+     *                      example: {'q':'foobar'}
+     *                      for GET this will append a query string
+     * @param success {function} callback for a successful request
+     * @param failure {function} callback for a failed request
+     */
+    put: function(url, data, success, failure){
+      this.request({'method': 'PUT', 'url': url, 'data': data, 'success': success, 'failure': failure});
+    },
+
+    /**
+     * Wrapper for DELETE OAuth.request
+     *
+     * @param url {string} vaild http(s) url
+     * @param success {function} callback for a successful request
+     * @param failure {function} callback for a failed request
+     */
+    delete: function(url, success, failure){
+      this.request({
+        method: 'DELETE',
+        url: url,
+        success: success,
+        failure: failure
+      });
+    },
+
     /**
      * Wrapper to parse a JSON string and pass it to the callback
      *
@@ -529,6 +560,7 @@ exports.OAuth = (function (global) {
      * Wrapper to parse a JSON string and pass it to the callback
      *
      * @param url {string} vaild http(s) url
+     * @param data {Object} JSON to post
      * @param success {function} callback for a successful request
      * @param failure {function} callback for a failed request
      */
@@ -545,6 +577,42 @@ exports.OAuth = (function (global) {
           'Content-Type': 'application/json'
         }
       });
+    },
+
+    /**
+     * Wrapper to parse a JSON string and pass it to the callback
+     *
+     * @param url {string} vaild http(s) url
+     * @param data {Object} JSON to post
+     * @param success {function} callback for a successful request
+     * @param failure {function} callback for a failed request
+     */
+    putJSON: function (url, data, success, failure) {
+      this.request({
+        'method': 'PUT',
+        'url': url,
+        'data': JSON.stringify(data),
+        'success': function (data) {
+          success(JSON.parse(data.text));
+        },
+        'failure': failure,
+        'headers': {
+          'Content-Type': 'application/json'
+        }
+      });
+    },
+
+    /**
+     * Wrapper to parse a JSON string and pass it to the callback
+     *
+     * @param url {string} vaild http(s) url
+     * @param success {function} callback for a successful request
+     * @param failure {function} callback for a failed request
+     */
+    deleteJSON: function (url, success, failure) {
+      this.delete(url, function (data) {
+        success(JSON.parse(data.text));
+      }, failure);
     },
 
     parseTokenRequest: function (tokenRequest, content_type) {
