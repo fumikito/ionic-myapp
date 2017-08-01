@@ -22,6 +22,10 @@ export class HomePage {
 
   author: Number = 0;
 
+  isRecording: Boolean = false;
+
+  errorText: string = '';
+
   constructor(
     public navCtrl: NavController,
     public toastCtrl: ToastController,
@@ -43,24 +47,52 @@ export class HomePage {
   record() {
     this.speechRecognition.isRecognitionAvailable()
       .then((available: boolean) => {
-        if ( available ) {
-          this.speechRecognition.startListening({
-            language: "ja-JP",
-          })
-            .subscribe(
-              (matches: Array<string>) => {
-                this.text = matches.join("\n");
-              },
-              (onerror) => {
-                this.text = '録音に失敗しました。やり直してください。';
+        if (available) {
+          this.errorText = '';
+          this.isRecording = true;
+          return this.speechRecognition.hasPermission()
+            .then((hasPermission: boolean) => {
+              if (hasPermission) {
+                this.startRecording();
+              } else {
+                this.speechRecognition.requestPermission()
+                  .then(
+                    () => {
+                      this.startRecording();
+                    },
+                    () => {
+                      this.errorText = '録音機能の利用が許可されませんでした。';
+                      this.isRecording = false;
+                    }
+                  );
               }
-            )
+            });
         } else {
-          this.text = '録音できません。入力してください。';
+          this.errorText = '録音機能が利用できません……手入力してください。';
+          this.isRecording = false;
         }
       }, () => {
-        this.text = 'エラーが発生しました。';
+        this.errorText = '録音機能にアクセスできませんでした。';
+        this.isRecording = false;
       });
+  }
+
+  stopRecording() {
+    this.speechRecognition.stopListening().then(() => this.isRecording = false );
+  }
+
+  startRecording() {
+      this.speechRecognition.startListening({
+          language: "ja-JP",
+      })
+          .subscribe(
+              (matches: Array<string>) => {
+                  this.text = [ this.text, matches[0] ].join("\n");
+              },
+              (onerror) => {
+                  this.errorText = '録音に失敗しました。やり直してください。';
+              }
+          );
   }
 
   submit() {

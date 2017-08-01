@@ -1,31 +1,42 @@
 <ion-header>
-  <ion-navbar>
-    <ion-title>Home</ion-title>
-  </ion-navbar>
+  <ion-toolbar>
+
+    <ion-buttons start>
+      <button ion-button icon-only clear color="dark" (click)="text = '';">
+        <ion-icon name="trash"></ion-icon>
+      </button>
+    </ion-buttons>
+
+    <ion-title text-center>録音</ion-title>
+
+    <ion-buttons end>
+      <button ion-button icon-only clear color="danger" *ngIf="!isRecording" (click)="record()">
+        <ion-icon name="mic"></ion-icon>
+      </button>
+      <button ion-button icon-only clear color="success" *ngIf="isRecording" (click)="stopRecording()">
+        <ion-icon ios="ios-close-circle" md="md-close-circle"></ion-icon>
+      </button>
+    </ion-buttons>
+
+  </ion-toolbar>
 </ion-header>
 
 <ion-content padding>
 
-  <h2 text-center>音声エディター</h2>
-
-  <ion-fab center middle>
-    <button ion-fab color="danger" (click)="record()">
-      <ion-icon name="md-mic"></ion-icon>
-    </button>
-  </ion-fab>
-</ion-content>
-
-<ion-footer>
   <ion-list>
 
     <ion-item>
-      <ion-label color="primary" floating>出力されたテキスト</ion-label>
-      <ion-textarea [(ngModel)]="text"></ion-textarea>
+      <ion-label color="primary" floating>{{ isRecording ? "録音中" : '入力結果' }}</ion-label>
+      <ion-textarea [(ngModel)]="text" rows="10"></ion-textarea>
     </ion-item>
 
-
-    <ion-item>
+    <ion-item *ngIf="author">
       <button ion-button color="primary" (click)="submit()">送信</button>
     </ion-item>
   </ion-list>
+
+</ion-content>
+
+<ion-footer>
+  <p class="error-text" *ngIf="errorText.length" padding>{{errorText}}</p>
 </ion-footer>

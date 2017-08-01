@@ -51,12 +51,12 @@ export class LoginPage {
     this.oauth.fetchRequestToken(
       (url) => {
         let browser = this.iab.create(url, 'auth');
-        // browser.on('loadstop').subscribe((event: InAppBrowserEvent) => {
-        //   console.log(event);
-        //   browser.executeScript('alert(\'Loaded!\')').then((result) => {
-        //     console.log(result);
-        //   });
-        // });
+        browser.on('loadstop').subscribe((event: InAppBrowserEvent) => {
+          console.log(event);
+          browser.executeScript('alert(\'Loaded!\')').then((result) => {
+            console.log(result);
+          });
+        });
       },
       (data) => {
         console.log('Error:', data)
