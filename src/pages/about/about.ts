@@ -5,6 +5,7 @@ import { InAppBrowser } from '@ionic-native/in-app-browser';
 
 import {EnvConfigurationProvider} from "gl-ionic2-env-configuration";
 import * as JsOAuth from '../../lib/jsoauth/jsoauth';
+import {HomePage} from "../home/home";
 
 @Component({
   selector: 'page-about',
@@ -29,14 +30,14 @@ export class AboutPage {
     private iab: InAppBrowser,
     private platform: Platform
   ) {
+    // Get config value
+    this.config = envConfiguration.getConfig();
     platform.ready().then(() => {
       // Get local storage
       this.storage.get('user_name').then((value) => {
         this.name = value;
       });
 
-      // Get config value
-      this.config = envConfiguration.getConfig();
       // Get oauth
       this.oauth = new JsOAuth.OAuth({
         consumerKey: this.config.clientKey,
@@ -60,6 +61,13 @@ export class AboutPage {
     );
   }
 
+  logout():void{
+
+    this.storage.clear().then(() => {
+      this.navCtrl.push(HomePage);
+    });
+
+  }
 
   retrieve(): void{
     this.oauth.setVerifier(this.pin);
