@@ -20,6 +20,7 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 // Import the module
 import { GithubUsersServiceProvider } from '../providers/github-users-service/github-users-service';
 import { GLIonic2EnvConfigurationModule } from 'gl-ionic2-env-configuration';
+import { WpOauthProvider } from '../providers/wp-oauth/wp-oauth';
 
 @NgModule({
   declarations: [
@@ -52,7 +53,8 @@ import { GLIonic2EnvConfigurationModule } from 'gl-ionic2-env-configuration';
     SplashScreen,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     GithubUsersServiceProvider,
-    SpeechRecognition
+    SpeechRecognition,
+    WpOauthProvider
   ]
 })
 export class AppModule {}

@@ -23,7 +23,13 @@
 
 <ion-content padding>
 
+
+
   <ion-list>
+
+    <ion-item>
+      <button ion-button (click)="fetchToken()">ログイン</button>
+    </ion-item>
 
     <ion-item>
       <ion-label color="primary" floating>{{ isRecording ? "録音中" : '入力結果' }}</ion-label>

@@ -870,9 +870,7 @@ exports.OAuth = (function (global) {
    * Factory object for XMLHttpRequest
    */
   function Request() {
-    return new XMLHttpRequest();
     var XHR;
-
 
     if (typeof global.Titanium !== 'undefined' && typeof global.Titanium.Network.createHTTPClient != 'undefined') {
       XHR = global.Titanium.Network.createHTTPClient();

@@ -6,7 +6,7 @@ import { LoginPage } from "../login/login";
 import { SpeechRecognition } from "@ionic-native/speech-recognition";
 import {EnvConfigurationProvider} from "gl-ionic2-env-configuration";
 import * as JsOAuth from '../../lib/jsoauth/jsoauth';
-
+import {WpOauthProvider} from "../../providers/wp-oauth/wp-oauth";
 
 @Component({
   selector: 'page-home',
@@ -75,6 +75,30 @@ export class HomePage {
         this.errorText = '録音機能にアクセスできませんでした。';
         this.isRecording = false;
       });
+  }
+
+  fetchToken(){
+    let accessToken = '';
+    let accessTokenSecret = '';
+    this.storage.get('access_token').then(function(value) {
+      accessToken = value;
+      return this.storage.get('access_token_secret');
+    }).then((val)=>{
+      accessTokenSecret = val;
+      let wp = new WpOauthProvider();
+      wp.setCredential({
+        clientKey: this.config.clientSecret,
+        clientSecret: this.config.clientSecret,
+        accessToken: '',
+        accessTokenSecret: '',
+        requestTokenUrl: this.config.requestTokenUrl,
+        authorizationUrl: this.config.authorizationUrl,
+        accessTokenUrl: this.config.accessTokenUrl,
+        callbackUrl: 'oob',
+        verifier: ''
+      });
+      wp.authorize();
+    });
   }
 
   stopRecording() {
