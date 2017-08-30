@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController } from 'ionic-angular';
+import { Platform, NavController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { InAppBrowser } from '@ionic-native/in-app-browser';
 
@@ -26,23 +26,26 @@ export class AboutPage {
     public navCtrl: NavController,
     public storage: Storage,
     private envConfiguration: EnvConfigurationProvider<any>,
-    private iab: InAppBrowser
+    private iab: InAppBrowser,
+    private platform: Platform
   ) {
-    // Get local storage
-    this.storage.get('user_name').then((value)=>{
-      this.name = value;
-    });
+    platform.ready().then(() => {
+      // Get local storage
+      this.storage.get('user_name').then((value) => {
+        this.name = value;
+      });
 
-    // Get config value
-    this.config = envConfiguration.getConfig();
-    // Get oauth
-    this.oauth = new JsOAuth.OAuth({
-      consumerKey: this.config.clientKey,
-      consumerSecret: this.config.clientSecret,
-      requestTokenUrl: this.config.requestTokenUrl,
-      authorizationUrl: this.config.authorizationUrl,
-      accessTokenUrl: this.config.accessTokenUrl,
-      callbackUrl: 'oob'
+      // Get config value
+      this.config = envConfiguration.getConfig();
+      // Get oauth
+      this.oauth = new JsOAuth.OAuth({
+        consumerKey: this.config.clientKey,
+        consumerSecret: this.config.clientSecret,
+        requestTokenUrl: this.config.requestTokenUrl,
+        authorizationUrl: this.config.authorizationUrl,
+        accessTokenUrl: this.config.accessTokenUrl,
+        callbackUrl: 'oob'
+      });
     });
   }
 
@@ -66,6 +69,7 @@ export class AboutPage {
       this.oauth.get(
         "https://wpionic.tokyo/wp-json/wp/v2/users/me",
         ( data ) => {
+          console.log('data: ',data);
           this.user = JSON.parse(data.text);
           console.log(this.user);
         },

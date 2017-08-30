@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {IonicPage, NavController, NavParams} from 'ionic-angular';
+import {Platform, IonicPage, NavController, NavParams} from 'ionic-angular';
 import {Storage} from '@ionic/storage';
 import {InAppBrowser, InAppBrowserEvent} from '@ionic-native/in-app-browser';
 import {EnvConfigurationProvider} from "gl-ionic2-env-configuration";
@@ -29,17 +29,20 @@ export class LoginPage {
               public navParams: NavParams,
               public storage: Storage,
               private envConfiguration: EnvConfigurationProvider<any>,
-              private iab: InAppBrowser) {
-    // Get config value
-    this.config = envConfiguration.getConfig();
-    // Get oauth
-    this.oauth = new JsOAuth.OAuth({
-      consumerKey: this.config.clientKey,
-      consumerSecret: this.config.clientSecret,
-      requestTokenUrl: this.config.requestTokenUrl,
-      authorizationUrl: this.config.authorizationUrl,
-      accessTokenUrl: this.config.accessTokenUrl,
-      callbackUrl: 'oob'
+              private iab: InAppBrowser,
+              private platform: Platform) {
+    platform.ready().then(() => {
+      // Get config value
+      this.config = envConfiguration.getConfig();
+      // Get oauth
+      this.oauth = new JsOAuth.OAuth({
+        consumerKey: this.config.clientKey,
+        consumerSecret: this.config.clientSecret,
+        requestTokenUrl: this.config.requestTokenUrl,
+        authorizationUrl: this.config.authorizationUrl,
+        accessTokenUrl: this.config.accessTokenUrl,
+        callbackUrl: 'oob'
+      });
     });
   }
 
@@ -52,9 +55,9 @@ export class LoginPage {
       (url) => {
         let browser = this.iab.create(url, 'auth');
         browser.on('loadstop').subscribe((event: InAppBrowserEvent) => {
-          console.log(event);
-          browser.executeScript('alert(\'Loaded!\')').then((result) => {
-            console.log(result);
+          console.log('event:',event);
+          browser.executeScript({code:'alert(\'Loaded!\')'}).then((result) => {
+            console.log('result:',result);
           });
         });
       },
@@ -77,7 +80,7 @@ export class LoginPage {
         return storage.set('access_token_secret', oauth.getAccessTokenSecret());
       }).then(() => {
         console.log('Get!', storage);
-        oauth.get('https://wpionic.tokyo/wp-json/wp/v2/users/me', (data) => {
+        oauth.get('https://wpionic.tokyo/wp-json/wp/v2/posts', (data) => {
           let user = JSON.parse(data.text);
           console.log('User: ', user, data);
           storage.set('id', user.id).then(()=>{
