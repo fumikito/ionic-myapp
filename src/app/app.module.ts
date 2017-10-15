@@ -1,5 +1,4 @@
 import { NgModule, ErrorHandler } from '@angular/core';
-import { HttpModule } from '@angular/http';
 import { BrowserModule } from '@angular/platform-browser';
 import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
 import { MyApp } from './app.component';
@@ -12,10 +11,14 @@ import { AboutPage } from '../pages/about/about';
 import { ContactPage } from '../pages/contact/contact';
 import { HomePage } from '../pages/home/home';
 import { LoginPage } from '../pages/login/login';
+import { LoginPageModule } from "../pages/login/login.module";
 import { TabsPage } from '../pages/tabs/tabs';
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
+
+import { HTTP } from '@ionic-native/http';
+import { Deeplinks } from '@ionic-native/deeplinks';
 
 // Import the module
 import { GithubUsersServiceProvider } from '../providers/github-users-service/github-users-service';
@@ -27,15 +30,14 @@ import { GLIonic2EnvConfigurationModule } from 'gl-ionic2-env-configuration';
     AboutPage,
     ContactPage,
     HomePage,
-    TabsPage,
-    LoginPage
+    TabsPage
   ],
   imports: [
-    HttpModule,
     BrowserModule,
     IonicModule.forRoot(MyApp),
     IonicStorageModule.forRoot(),
-    GLIonic2EnvConfigurationModule
+    GLIonic2EnvConfigurationModule,
+    LoginPageModule
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -52,7 +54,9 @@ import { GLIonic2EnvConfigurationModule } from 'gl-ionic2-env-configuration';
     SplashScreen,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     GithubUsersServiceProvider,
-    SpeechRecognition
+    SpeechRecognition,
+    HTTP,
+    Deeplinks
   ]
 })
 export class AppModule {}
