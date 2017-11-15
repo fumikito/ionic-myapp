@@ -32,3 +32,4 @@ src/assets/config
 .DS_Store
 Thumbs.db
 UserInterfaceState.xcuserstate
+.sourcemaps/

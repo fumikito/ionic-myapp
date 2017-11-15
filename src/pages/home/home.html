@@ -2,7 +2,7 @@
   <ion-toolbar>
 
     <ion-buttons start>
-      <button ion-button icon-only clear color="dark" (click)="text = '';">
+      <button ion-button icon-only clear color="dark" (click)="clearText()">
         <ion-icon name="trash"></ion-icon>
       </button>
     </ion-buttons>
@@ -30,7 +30,7 @@
       <ion-textarea [(ngModel)]="text" rows="10"></ion-textarea>
     </ion-item>
 
-    <ion-item *ngIf="author">
+    <ion-item *ngIf="isShowSubmit">
       <button ion-button color="primary" (click)="submit()">送信</button>
     </ion-item>
   </ion-list>
