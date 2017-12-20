@@ -1,6 +1,6 @@
 import { NgModule, ErrorHandler } from '@angular/core';
-import { HttpModule } from '@angular/http';
 import { BrowserModule } from '@angular/platform-browser';
+import { HttpClientModule } from '@angular/common/http';
 import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
 import { MyApp } from './app.component';
 import { SpeechRecognition } from '@ionic-native/speech-recognition';
@@ -32,8 +32,8 @@ import { WpOauthProvider } from '../providers/wp-oauth/wp-oauth';
     LoginPage
   ],
   imports: [
-    HttpModule,
     BrowserModule,
+    HttpClientModule,
     IonicModule.forRoot(MyApp),
     IonicStorageModule.forRoot(),
     GLIonic2EnvConfigurationModule

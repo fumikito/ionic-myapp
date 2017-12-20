@@ -1,10 +1,14 @@
 import {Component} from '@angular/core';
-import {IonicPage, NavController, NavParams} from 'ionic-angular';
+import {IonicPage, NavController, NavParams, ToastController} from 'ionic-angular';
 import {Storage} from '@ionic/storage';
-import {InAppBrowser, InAppBrowserEvent} from '@ionic-native/in-app-browser';
 import {EnvConfigurationProvider} from "gl-ionic2-env-configuration";
-import * as JsOAuth from '../../lib/jsoauth/jsoauth';
+import {WpOauthProvider} from "../../providers/wp-oauth/wp-oauth";
 import {HomePage} from "../home/home";
+
+interface AuthResult {
+  token: string;
+}
+
 
 /**
  * Generated class for the LoginPage page.
@@ -21,26 +25,22 @@ export class LoginPage {
 
   config: any;
 
-  oauth: any;
+  user_pass: string;
+
+  user_name: string;
 
   pin: String;
 
   constructor(public navCtrl: NavController,
               public navParams: NavParams,
+              public toastCtrl: ToastController,
               public storage: Storage,
               private envConfiguration: EnvConfigurationProvider<any>,
-              private iab: InAppBrowser) {
+              private wp: WpOauthProvider
+  ){
     // Get config value
     this.config = envConfiguration.getConfig();
-    // Get oauth
-    this.oauth = new JsOAuth.OAuth({
-      consumerKey: this.config.clientKey,
-      consumerSecret: this.config.clientSecret,
-      requestTokenUrl: this.config.requestTokenUrl,
-      authorizationUrl: this.config.authorizationUrl,
-      accessTokenUrl: this.config.accessTokenUrl,
-      callbackUrl: 'oob'
-    });
+    console.log(this.config);
   }
 
   ionViewDidLoad() {
@@ -48,46 +48,33 @@ export class LoginPage {
   }
 
   authenticate(): void {
-    this.oauth.fetchRequestToken(
-      (url) => {
-        let browser = this.iab.create(url, 'auth');
-        browser.on('loadstop').subscribe((event: InAppBrowserEvent) => {
-          console.log(event);
-          browser.executeScript('alert(\'Loaded!\')').then((result) => {
-            console.log(result);
-          });
+    this.wp.authorize( this.user_name, this.user_pass ).subscribe(
+      response=>{
+        let result = response as AuthResult;
+        this.storage.set('token', result.token).then(()=>{
+          this.wp.me(result.token).subscribe(
+            res=>{
+              this.storage.set('id', res.id).then(()=>{
+                return this.storage.set('user', res);
+              }).then(()=>{
+                this.navCtrl.push(HomePage);
+              });
+            },
+            err=>{
+              console.log(err);
+            }
+          )
         });
       },
-      (data) => {
-        console.log('Error:', data)
+      err => {
+        console.log(err);
+        let toast = this.toastCtrl.create({
+          message: err.json().message,
+          duration: 3000
+        });
+        toast.present();
       }
     );
   }
 
-  retrieve(): void {
-    this.oauth.setVerifier(this.pin);
-
-    let storage = this.storage;
-    let nav = this.navCtrl;
-    let oauth = this.oauth;
-    this.oauth.fetchAccessToken(() => {
-      // Save access token
-      storage.set('access_token', oauth.getAccessTokenKey()) // Promise が帰ってきている
-        .then(() => {
-        return storage.set('access_token_secret', oauth.getAccessTokenSecret());
-      }).then(() => {
-        console.log('Get!', storage);
-        oauth.get('https://wpionic.tokyo/wp-json/wp/v2/users/me', (data) => {
-          let user = JSON.parse(data.text);
-          console.log('User: ', user, data);
-          storage.set('id', user.id).then(()=>{
-            nav.push(HomePage);
-          });
-        });
-      });
-    }, () => {
-      throw new Error('Failed to fetch access token.');
-    });
-
-  }
 }

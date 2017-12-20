@@ -1,10 +1,9 @@
 import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
-import { InAppBrowser } from '@ionic-native/in-app-browser';
-
 import {EnvConfigurationProvider} from "gl-ionic2-env-configuration";
-import * as JsOAuth from '../../lib/jsoauth/jsoauth';
+import {LoginPage} from "../login/login";
+import {WpUser} from "../../providers/wp-oauth/wp-user";
 
 @Component({
   selector: 'page-about',
@@ -16,81 +15,40 @@ export class AboutPage {
 
   config: any;
 
-  oauth: any;
-
-  pin: string;
-
-  user: any;
+  user: WpUser;
 
   constructor(
     public navCtrl: NavController,
     public storage: Storage,
     private envConfiguration: EnvConfigurationProvider<any>,
-    private iab: InAppBrowser
   ) {
     // Get local storage
-    this.storage.get('user_name').then((value)=>{
-      this.name = value;
+    this.storage.get('user').then((value)=>{
+      console.log(value);
+      this.name = value.name;
+      this.user = value;
     });
 
     // Get config value
     this.config = envConfiguration.getConfig();
-    // Get oauth
-    this.oauth = new JsOAuth.OAuth({
-      consumerKey: this.config.clientKey,
-      consumerSecret: this.config.clientSecret,
-      requestTokenUrl: this.config.requestTokenUrl,
-      authorizationUrl: this.config.authorizationUrl,
-      accessTokenUrl: this.config.accessTokenUrl,
-      callbackUrl: 'oob'
-    });
   }
 
-  authorize():void{
-    this.oauth.fetchRequestToken(
-      (url) => {
-        this.iab.create(url, 'auth');
-      },
-      (data) => {
-        console.log('Error:', data)
-      }
-    );
-  }
+  logout(){
+    this.name = '';
+    this.user = null;
+    alert('いまからログ会うtします。');
+    console.log(this.storage);
+    this.storage.get('token').then((val)=>alert(val)).catch(()=>alert('なかった'));
 
-
-  retrieve(): void{
-    this.oauth.setVerifier(this.pin);
-
-    this.oauth.fetchAccessToken(() => {
-      // Save access token
-      this.oauth.get(
-        "https://wpionic.tokyo/wp-json/wp/v2/users/me",
-        ( data ) => {
-          this.user = JSON.parse(data.text);
-          console.log(this.user);
-        },
-        ( data ) => {
-          console.log(data);
-        }
-      );
-      // Do something
-      this.oauth.post(
-        "https://wpionic.tokyo/wp-json/wp/v2/posts",
-        {
-          'title': 'REST API',
-          'author': 1,
-          'content': 'はじめてのコンテンツ'
-        },
-        ( data ) => {
-          console.log(JSON.parse(data.text));
-        },
-        ( data ) => {
-          console.log(data);
-        }
-      );
-
-    }, () => {
-      throw new Error('Failed to fetch access token.');
+    this.storage.remove('token').then(()=>{
+      return this.storage.remove('user');
+    }).then(()=>{
+      return this.storage.remove('id');
+    }).then(()=>{
+      this.navCtrl.push(LoginPage);
+    }).catch(()=>{
+      alert('ログアウトできませんでした。');
     });
+
   }
 }

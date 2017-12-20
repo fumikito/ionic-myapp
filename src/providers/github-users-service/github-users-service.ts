@@ -1,8 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Http } from '@angular/http';
-import { Observable } from 'rxjs/Rx';
-import 'rxjs/add/operator/map';
-import { User } from './User';
+import { HttpClient } from '@angular/common/http';
+import {User} from "./User";
 
 /*
   Generated class for the GithubUsersServiceProvider provider.
@@ -13,12 +11,11 @@ import { User } from './User';
 @Injectable()
 export class GithubUsersServiceProvider {
 
-  constructor(public http: Http) {
+  constructor(public http: HttpClient) {
     console.log('Hello GithubUsersServiceProvider Provider');
   }
 
-  getUsers(): Observable<User[]>{
-    return this.http.get('https://hametuha.com/wp-json/wp/v2/posts/')
-      .map(res => <Array<User>>res.json());
+  getUsers(){
+    return this.http.get<User[]>('https://hametuha.com/wp-json/wp/v2/posts/');
   }
 }

@@ -5,7 +5,6 @@ import { Storage } from '@ionic/storage';
 import { LoginPage } from "../login/login";
 import { SpeechRecognition } from "@ionic-native/speech-recognition";
 import {EnvConfigurationProvider} from "gl-ionic2-env-configuration";
-import * as JsOAuth from '../../lib/jsoauth/jsoauth';
 import {WpOauthProvider} from "../../providers/wp-oauth/wp-oauth";
 
 @Component({
@@ -31,16 +30,29 @@ export class HomePage {
     public toastCtrl: ToastController,
     public storage: Storage,
     private envConfiguration: EnvConfigurationProvider<any>,
-    private speechRecognition: SpeechRecognition
+    private speechRecognition: SpeechRecognition,
+    private wp: WpOauthProvider,
   ) {
     this.config = envConfiguration.getConfig();
-    this.storage.get('id').then((id)=>{
-    console.log('Constructor', id);
+    this.wp.setCredential({
+      clientKey: this.config.clientKey.toString(),
+      clientSecret: this.config.clientSecret.toString(),
+      endpoint: this.config.endpoint.toString()
+    });
+    console.log(this.storage);
+    alert(this.storage.driver);
+    this.storage.ready().then(()=>{
+      return this.storage.get('id');
+    }).then((id)=>{
+      alert(id);
+      console.log('Constructor', id);
       if (id) {
         this.author = id;
       } else {
         this.navCtrl.push(LoginPage);
       }
+    }).catch(()=>{
+      alert('ストレージがない');
     });
   }
 
@@ -77,30 +89,6 @@ export class HomePage {
       });
   }
 
-  fetchToken(){
-    let accessToken = '';
-    let accessTokenSecret = '';
-    this.storage.get('access_token').then(function(value) {
-      accessToken = value;
-      return this.storage.get('access_token_secret');
-    }).then((val)=>{
-      accessTokenSecret = val;
-      let wp = new WpOauthProvider();
-      wp.setCredential({
-        clientKey: this.config.clientSecret,
-        clientSecret: this.config.clientSecret,
-        accessToken: '',
-        accessTokenSecret: '',
-        requestTokenUrl: this.config.requestTokenUrl,
-        authorizationUrl: this.config.authorizationUrl,
-        accessTokenUrl: this.config.accessTokenUrl,
-        callbackUrl: 'oob',
-        verifier: ''
-      });
-      wp.authorize();
-    });
-  }
-
   stopRecording() {
     this.speechRecognition.stopListening().then(() => this.isRecording = false );
   }
@@ -120,41 +108,23 @@ export class HomePage {
   }
 
   submit() {
-
-    // Get oauth
-    let config:any = {
-      consumerKey: this.config.clientKey,
-      consumerSecret: this.config.clientSecret
-    };
-
-    let storage = this.storage;
-    let author = this.author;
-    let text = this.text;
-    let notify = this.notify;
-
-    storage.get('access_token').then(function(value){
-      config.accessTokenKey = value;
-      return storage.get('access_token_secret')
-    }).then(function(value){
-      config.accessTokenSecret = value;
-      let oauth = new JsOAuth.OAuth(config);
-      oauth.post(
-        "https://wpionic.tokyo/wp-json/wp/v2/posts",
-        {
-          title: '音声投稿されたコンテンツ',
-          author: author,
-          content: text
-        },
-        ( data ) => {
-          window.alert('投稿しました');
-        },
-        ( data ) => {
-          notify('エラーでした');
-        }
-      );
+    if(!this.text.length){
+      return this.notify('1文字もありません！');
+    }
+    this.storage.get('id').then(id=>{
+      return this.wp.post('wp/v2/posts', {
+        status: 'draft',
+        title: '録音@' + (new Date()).toLocaleString(),
+        content: this.text,
+        author: id
+      });
+    }).then(res=>{
+      this.text = '';
+      this.notify('保存しました');
+    }).catch((err)=>{
+      console.log(err);
+      this.notify('エラーが発生しました。');
     });
-
-
   }
 
   notify(string) {
