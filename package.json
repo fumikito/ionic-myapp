@@ -30,7 +30,6 @@
     "cordova-plugin-console": "^1.0.5",
     "cordova-plugin-device": "^1.1.4",
     "cordova-plugin-inappbrowser": "^1.7.1",
-    "cordova-plugin-ionic-webview": "^1.1.11",
     "cordova-plugin-speechrecognition": "^1.1.2",
     "cordova-plugin-splashscreen": "^4.0.3",
     "cordova-plugin-statusbar": "^2.2.2",
@@ -61,7 +60,6 @@
       "ionic-plugin-keyboard": {},
       "cordova-plugin-inappbrowser": {},
       "cordova-plugin-speechrecognition": {},
-      "cordova-plugin-ionic-webview": {},
       "cordova-sqlite-storage": {}
     },
     "platforms": [
